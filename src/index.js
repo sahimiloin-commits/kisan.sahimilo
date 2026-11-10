@@ -30,16 +30,16 @@ export default {
 };
 
 const PAGE = String.raw`<!doctype html>
-<html lang="hi">
+<html lang="hi-Latn">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#164b32">
-<meta name="description" content="SahiMilo Kisan: Kheti Ki Har Zaroorat, Ek Hi Jagah. Bihar ke kisano ke liye kheti salah, machinery, inputs, yojana jaankari aur bazaar tak madad.">
+<meta name="description" content="Sitamarhi, Bihar ke kisano ke liye tractor aur machinery requests, sinchai, beej-khaad ki jaankari, sarkari yojana aur fasal bechne mein madad.">
 <meta name="google-site-verification" content="VLVKizXoF8g4A3FtSi6pn2LjaJjWyDAmcRWLmsWExJg" />
-<meta property="og:title" content="SahiMilo Kisan | Kheti Ki Har Zaroorat, Ek Hi Jagah">
-<meta property="og:description" content="Gaon se, kisan ke saath. Kheti ke kaam ko aasaan banane ki ek pehal.">
-<title>SahiMilo Kisan | Kheti Ki Har Zaroorat, Ek Hi Jagah</title>
+<link rel="canonical" href="https://sahimilo.in/">\n<meta property="og:type" content="website">\n<meta property="og:url" content="https://sahimilo.in/">\n<meta property="og:title" content="SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar">
+<meta property="og:description" content="Sitamarhi ke kisano ke liye kheti services, machinery requests, sinchai, yojana jaankari aur fasal se judi madad.">\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar">\n<meta name="twitter:description" content="Sitamarhi ke kisano ke liye kheti services, machinery requests, sinchai, yojana jaankari aur fasal se judi madad.">
+<title>SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar</title>
 <link rel="preconnect" href="https://images.unsplash.com">
 <style>
 :root{--green:#164b32;--deep:#0d3022;--leaf:#438b4d;--lime:#d9efb5;--cream:#f8f8f1;--ink:#1b2b21;--muted:#66756a;--line:#e3e9df;--gold:#efbd55}
