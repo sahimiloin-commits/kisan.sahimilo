@@ -3,6 +3,10 @@ const CONTACT_EMAIL = "sahimilo.in@gmail.com";
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+    if (url.searchParams.get("utm_source")?.toLowerCase() === "chatgpt.com") {
+      url.searchParams.delete("utm_source");
+      return Response.redirect(url.toString(), 301);
+    }
     if (url.pathname === "/health") {
       return new Response("SahiMilo Kisan is running", {
         headers: { "content-type": "text/plain; charset=utf-8" }
