@@ -24,7 +24,7 @@ export default {
   }
 };
 
-const PAGE = String.raw\`<!doctype html>
+const PAGE = String.raw`<!doctype html>
 <html lang="hi">
 <head>
 <meta charset="utf-8">
@@ -114,4 +114,4 @@ document.getElementById("enquiry").addEventListener("submit",function(e){
  window.location.href="mailto:sahimilo.in@gmail.com?subject="+subject+"&body="+body;
 });
 </script>
-</body></html>\`;
+</body></html>`;
