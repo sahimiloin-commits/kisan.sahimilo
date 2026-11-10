@@ -37,8 +37,14 @@ const PAGE = String.raw`<!doctype html>
 <meta name="theme-color" content="#164b32">
 <meta name="description" content="Sitamarhi, Bihar ke kisano ke liye tractor aur machinery requests, sinchai, beej-khaad ki jaankari, sarkari yojana aur fasal bechne mein madad.">
 <meta name="google-site-verification" content="VLVKizXoF8g4A3FtSi6pn2LjaJjWyDAmcRWLmsWExJg" />
-<link rel="canonical" href="https://sahimilo.in/">\n<meta property="og:type" content="website">\n<meta property="og:url" content="https://sahimilo.in/">\n<meta property="og:title" content="SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar">
-<meta property="og:description" content="Sitamarhi ke kisano ke liye kheti services, machinery requests, sinchai, yojana jaankari aur fasal se judi madad.">\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar">\n<meta name="twitter:description" content="Sitamarhi ke kisano ke liye kheti services, machinery requests, sinchai, yojana jaankari aur fasal se judi madad.">
+<link rel="canonical" href="https://sahimilo.in/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sahimilo.in/">
+<meta property="og:title" content="SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar">
+<meta property="og:description" content="Sitamarhi ke kisano ke liye kheti services, machinery requests, sinchai, yojana jaankari aur fasal se judi madad.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar">
+<meta name="twitter:description" content="Sitamarhi ke kisano ke liye kheti services, machinery requests, sinchai, yojana jaankari aur fasal se judi madad.">
 <title>SahiMilo Kisan | Kheti Services in Sitamarhi, Bihar</title>
 <link rel="preconnect" href="https://images.unsplash.com">
 <style>
