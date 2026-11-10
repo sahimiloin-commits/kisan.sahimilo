@@ -31,6 +31,7 @@ const PAGE = String.raw`<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#164b32">
 <meta name="description" content="SahiMilo Kisan: Kheti Ki Har Zaroorat, Ek Hi Jagah. Bihar ke kisano ke liye kheti salah, machinery, inputs, yojana jaankari aur bazaar tak madad.">
+<meta name="google-site-verification" content="VLVKizXoF8g4A3FtSi6pn2LjaJjWyDAmcRWLmsWExJg" />
 <meta property="og:title" content="SahiMilo Kisan | Kheti Ki Har Zaroorat, Ek Hi Jagah">
 <meta property="og:description" content="Gaon se, kisan ke saath. Kheti ke kaam ko aasaan banane ki ek pehal.">
 <title>SahiMilo Kisan | Kheti Ki Har Zaroorat, Ek Hi Jagah</title>
