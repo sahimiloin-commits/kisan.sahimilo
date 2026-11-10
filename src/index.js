@@ -9,8 +9,13 @@ export default {
       });
     }
     if (url.pathname === "/robots.txt") {
-      return new Response("User-agent: *\nAllow: /\n", {
+      return new Response("User-agent: *\nAllow: /\nSitemap: https://sahimilo.in/sitemap.xml\n", {
         headers: { "content-type": "text/plain; charset=utf-8" }
+      });
+    }
+    if (url.pathname === "/sitemap.xml") {
+      return new Response('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://sahimilo.in/</loc>\n  </url>\n</urlset>', {
+        headers: { "content-type": "application/xml; charset=utf-8" }
       });
     }
     return new Response(PAGE, {
