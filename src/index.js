@@ -83,7 +83,22 @@ async function adminApi(request, env, url) {
   }catch(e){return out({error:e.message||"Server error"},500)}
 }
 const ADMIN_PAGE = String.raw`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>SahiMilo Founder Admin</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>body{font:15px system-ui;background:#f4f7f1;color:#183526;margin:0;padding:20px}.wrap{max-width:1100px;margin:auto}.card{background:white;padding:20px;border:1px solid #dfe8dc;border-radius:14px;margin:16px 0;overflow:auto}input,select,textarea{padding:9px;border:1px solid #ccd9c9;border-radius:7px;margin:5px}button{background:#164b32;color:white;border:0;padding:10px 14px;border-radius:7px;cursor:pointer}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;padding:9px;border-bottom:1px solid #e6ece3}small{color:#68776b}.hide{display:none}</style></head><body><div class="wrap"><h1>🌾 SahiMilo Kisan | Founder Admin</h1><section class="card" id="login"><h2>Admin Login</h2><p><input id="email" type="email" value="sahimilo.in@gmail.com" placeholder="Admin email"></p><p><input id="password" type="password" placeholder="Password"></p><button id="signin">Sign in</button><p id="msg"></p><small>Create and confirm this admin user in Supabase Authentication before signing in.</small></section><section id="dash" class="hide"><div class="card"><span id="who"></span> <button id="refresh">Refresh</button> <button id="logout">Sign out</button><h2 id="counts"></h2></div><div class="card"><h2>Farmer Requests</h2><div id="requests"></div></div><div class="card"><h2>Providers</h2><div id="providers"></div></div><div class="card"><h2>Record Farmer Benefit</h2><input id="bn" placeholder="Farmer name"><input id="bv" placeholder="Village"><input id="bt" placeholder="Benefit type"><input id="br" type="number" placeholder="Realised ₹"><input id="bh" type="number" placeholder="Hours saved"><input id="bo" placeholder="Outcome note"><label><input id="bc" type="checkbox"> Farmer confirmed</label><button id="benefit">Save benefit</button><div id="benefits"></div></div></section></div><script>
-const URL="https://izaphwwumtexlfcdfnkv.supabase.co",KEY="sb_publishable_LnautAyKHBnN_Kf7V9HQ7Q_-sH86Qh",sb=window.supabase.createClient(URL,KEY);let session=null,records={};
+const URL="https://izaphwwumtexlfcdfnkv.supabase.co",KEY="sb_publishable_LnautAyKHBnN_Kf7V9HQ7Q_-sH86Qh";let sb=null,session=null,records={};
+async function getSupabaseClient(){
+  if(sb)return sb;
+  if(!window.supabase?.createClient){
+    await new Promise((resolve,reject)=>{
+      const script=document.createElement("script");
+      script.src="https://unpkg.com/@supabase/supabase-js@2";
+      script.onload=resolve;
+      script.onerror=()=>reject(new Error("Supabase login library could not load. Please refresh the page and try again."));
+      document.head.appendChild(script);
+    });
+  }
+  if(!window.supabase?.createClient)throw new Error("Supabase login library is unavailable. Please refresh the page and try again.");
+  sb=window.supabase.createClient(URL,KEY);
+  return sb;
+}
 const el=id=>document.getElementById(id),esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function api(path,method="GET",body){const r=await fetch(path,{method,headers:{authorization:"Bearer "+session.access_token,"content-type":"application/json"},body:body?JSON.stringify(body):undefined});const j=await r.json();if(!r.ok)throw Error(j.error||"Request failed");return j}
 async function load(){records=await api("/api/admin/overview");el("counts").textContent=records.requests.length+" requests · "+records.providers.length+" providers · "+records.providers.filter(x=>x.status==="verified").length+" verified";
@@ -92,7 +107,7 @@ el("providers").innerHTML="<table><tr><th>Name / phone</th><th>Service / village
 el("benefits").innerHTML="<p><b>Benefit records:</b> "+records.benefits.length+"</p>"+records.benefits.map(b=>esc(b.farmer_name)+" · "+esc(b.village)+" · ₹"+esc(b.realised_amount||0)+" · "+(b.farmer_confirmed?"Confirmed":"Not confirmed")).join("<br>")}
 window.saveReq=async id=>{try{await api("/api/admin/requests/"+encodeURIComponent(id),"PATCH",{status:el("s"+id).value,assigned_provider_id:el("p"+id).value||null,quoted_amount:el("q"+id).value||null,admin_notes:el("n"+id).value});await load()}catch(e){alert(e.message)}};
 window.saveProv=async id=>{try{await api("/api/admin/providers/"+encodeURIComponent(id),"PATCH",{status:el("ps"+id).value,availability:el("pa"+id).value,admin_notes:el("pn"+id).value});await load()}catch(e){alert(e.message)}};
-el("signin").onclick=async()=>{try{el("msg").textContent="Signing in...";const {data,error}=await sb.auth.signInWithPassword({email:el("email").value,password:el("password").value});if(error)throw error;if((data.user.email||"").toLowerCase()!=="sahimilo.in@gmail.com")throw Error("Not the authorised admin email.");session=data.session;el("login").classList.add("hide");el("dash").classList.remove("hide");el("who").textContent=data.user.email;await load()}catch(e){el("msg").textContent=e.message}};
+el("signin").onclick=async()=>{const button=el("signin");button.disabled=true;try{el("msg").textContent="Connecting to secure login...";const client=await getSupabaseClient();el("msg").textContent="Signing in...";const {data,error}=await client.auth.signInWithPassword({email:el("email").value,password:el("password").value});if(error)throw error;if((data.user.email||"").toLowerCase()!=="sahimilo.in@gmail.com")throw Error("Not the authorised admin email.");session=data.session;el("login").classList.add("hide");el("dash").classList.remove("hide");el("who").textContent=data.user.email;await load()}catch(e){el("msg").textContent=e.message}finally{button.disabled=false}};
 el("refresh").onclick=()=>load().catch(e=>alert(e.message));el("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
 el("benefit").onclick=async()=>{try{await api("/api/admin/benefits","POST",{farmer_name:el("bn").value,village:el("bv").value,benefit_type:el("bt").value,realised_amount:el("br").value||null,time_saved_hours:el("bh").value||null,outcome_note:el("bo").value,farmer_confirmed:el("bc").checked});await load();alert("Saved")}catch(e){alert(e.message)}};
 </script></body></html>`;
