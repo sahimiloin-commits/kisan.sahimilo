@@ -7,6 +7,8 @@ export default {
       url.searchParams.delete("utm_source");
       return Response.redirect(url.toString(), 301);
     }
+    if (url.pathname === "/privacy-policy" || url.pathname === "/privacy-policy/") return new Response(PRIVACY_PAGE, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    if (url.pathname === "/terms" || url.pathname === "/terms/") return new Response(TERMS_PAGE, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (url.pathname === "/health") {
       return new Response("SahiMilo Kisan is running", {
         headers: { "content-type": "text/plain; charset=utf-8" }
@@ -118,7 +120,7 @@ const PAGE = String.raw`<!doctype html>
 <div class="field full"><button class="btn" type="submit">Request bhejein →</button></div></div>
 <p class="formNote">Submit karne par aapke device ka email app khulega. Abhi website par enquiry database connect nahi hai, isliye email bhejna zaroori hai.</p></form></div></div></section>
 </main>
-<footer class="footer"><div class="wrap"><div class="foot"><div><a class="brand" href="#"><img src="https://raw.githubusercontent.com/sahimiloin-commits/kisan.sahimilo/main/SahiMilo%20Kisan%20Agricultural%20Badge.png" alt="SahiMilo Kisan Agricultural Badge" width="46" height="46"><span>SahiMilo Kisan<small>Kheti Ki Har Zaroorat, Ek Hi Jagah.</small></span></a><p>Khet se bazaar tak, kheti ki zarooraton ko samajhne aur sahi madad tak pahunch banane ki ek pehal.</p></div><div><b>Quick links</b><p><a href="#services">Services</a><br><a href="#schemes">Sarkari yojana</a><br><a href="#membership">Membership</a><br><a href="#contact">Contact</a></p></div></div><div class="footBottom"><span>© <span id="year"></span> SahiMilo Kisan. All rights reserved.</span><span>Sitamarhi, Bihar, India</span></div></div></footer>
+<footer class="footer"><div class="wrap"><div class="foot"><div><a class="brand" href="#"><img src="https://raw.githubusercontent.com/sahimiloin-commits/kisan.sahimilo/main/SahiMilo%20Kisan%20Agricultural%20Badge.png" alt="SahiMilo Kisan Agricultural Badge" width="46" height="46"><span>SahiMilo Kisan<small>Kheti Ki Har Zaroorat, Ek Hi Jagah.</small></span></a><p>Khet se bazaar tak, kheti ki zarooraton ko samajhne aur sahi madad tak pahunch banane ki ek pehal.</p></div><div><b>Quick links</b><p><a href="#services">Services</a><br><a href="#schemes">Sarkari yojana</a><br><a href="#membership">Membership</a><br><a href="#contact">Contact</a></p></div></div><div class="footBottom"><span>© <span id="year"></span> SahiMilo Kisan. All rights reserved.</span><span><a href="/privacy-policy">Privacy Policy</a> · <a href="/terms">Terms of Service</a></span><span>Sitamarhi, Bihar, India</span></div></div></footer>
 <a class="btn mobileBar" href="#contact">🌾 Kisan request bhejein</a>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
@@ -132,3 +134,62 @@ document.getElementById("enquiry").addEventListener("submit",function(e){
 });
 </script>
 </body></html>`;
+
+
+const LEGAL_STYLES = `
+:root{--green:#164b32;--deep:#0d3022;--cream:#f8f8f1;--ink:#1b2b21;--muted:#66756a;--line:#e3e9df}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}.wrap{width:min(850px,calc(100% - 32px));margin:38px auto 60px}.top{background:var(--deep);color:#fff;padding:16px 0}.top .wrap{margin:0 auto;display:flex;justify-content:space-between;gap:12px;align-items:center}.top a{color:#fff;text-decoration:none;font-weight:700}.paper{background:white;border:1px solid var(--line);border-radius:18px;padding:clamp(22px,5vw,48px)}h1,h2{color:var(--deep);line-height:1.2}h1{font-size:clamp(30px,5vw,42px);margin:0 0 8px}h2{font-size:20px;margin:28px 0 8px}p,li{color:#435348}a{color:#267342}.date{font-size:13px;color:var(--muted)}.note{background:#f0f6eb;border-left:4px solid #6b9c58;padding:13px 16px;border-radius:8px;font-size:14px}.back{display:inline-block;margin-top:25px;font-weight:700}`;
+const LEGAL_HEAD = (title, description) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${description}"><link rel="canonical" href="https://sahimilo.in/${title === "Privacy Policy" ? "privacy-policy" : "terms"}"><title>${title} | SahiMilo Kisan</title><style>${LEGAL_STYLES}</style></head><body><div class="top"><div class="wrap"><a href="/">🌾 SahiMilo Kisan</a><a href="/">Home</a></div></div><main class="wrap"><article class="paper"><h1>${title}</h1><p class="date">Last updated: 11 November 2026</p>`;
+const LEGAL_TAIL = `<a class="back" href="/">← Back to SahiMilo Kisan</a></article></main></body></html>`;
+
+const PRIVACY_PAGE = LEGAL_HEAD("Privacy Policy", "How SahiMilo Kisan handles information when you visit our website or contact us.") + String.raw`
+<p>This Privacy Policy explains how SahiMilo Kisan ("we", "us" or "our") handles information when you visit <a href="https://sahimilo.in/">sahimilo.in</a> or contact us. We aim to collect only information needed to respond to your request and operate the website.</p>
+<h2>1. Information you choose to provide</h2>
+<p>If you contact us by email, phone or WhatsApp, you may choose to share your name, mobile number, village, district, farming requirement, provider details and the contents of your message. The website enquiry form currently opens your device's email application using a pre-filled message. It does not submit the form to a SahiMilo Kisan website database.</p>
+<p>Please do not send Aadhaar numbers, bank account details, passwords, OTPs, land records or other sensitive documents through an ordinary email, phone call or WhatsApp message unless we have explained a necessary and secure process. We do not ask you to share OTPs or passwords.</p>
+<h2>2. Website and technical information</h2>
+<p>Our website is hosted using Cloudflare. Hosting and security services may process technical information such as IP address, browser/device information, requested pages, timestamps and security logs to deliver, protect and maintain the website. We do not currently operate a farmer account database or online payment facility on this website.</p>
+<h2>3. How we use information</h2>
+<ul><li>To respond to enquiries and requests you send us.</li><li>To contact you about the specific farming service or information you requested.</li><li>To coordinate, where appropriate, with a relevant service provider, and only to the extent needed to handle your request.</li><li>To maintain website security, prevent misuse and improve our services.</li></ul>
+<h2>4. Sharing</h2>
+<p>We do not sell personal information. If your request requires a local service provider or other organisation to contact you, we will explain what information needs to be shared and seek your agreement before sharing it. External services you choose to use, including WhatsApp, email providers, telephone networks and linked government websites, operate under their own privacy terms.</p>
+<h2>5. Retention and security</h2>
+<p>We keep enquiry information only for as long as reasonably needed to respond, coordinate the requested service, resolve a dispute, meet legal requirements or maintain appropriate records. We use reasonable safeguards, but no internet transmission or storage system can be guaranteed completely secure.</p>
+<h2>6. Your choices and requests</h2>
+<p>You may ask us to correct or delete information you have sent us, or to stop using it for future contact, subject to applicable legal and operational requirements. You may also withdraw permission for a particular sharing or follow-up by contacting us.</p>
+<h2>7. Children</h2>
+<p>Our services are intended for adults involved in farming or agricultural services. We do not knowingly seek personal information from children.</p>
+<h2>8. Changes to this policy</h2>
+<p>We may update this policy as the website and services develop. The latest version will be published on this page with its updated date. If we introduce accounts, online registrations, payments or additional data collection, we will update this policy and provide appropriate notices before those features are used.</p>
+<h2>9. Contact and privacy questions</h2>
+<p>For privacy questions, access, correction or deletion requests, contact: <a href="mailto:sahimilo.in@gmail.com">sahimilo.in@gmail.com</a> or call <a href="tel:+919718073873">+91 97180 73873</a>.</p>
+<p class="note">This page is a plain-language website policy, not a legal opinion. We will review it as our actual data practices and applicable Indian data-protection requirements evolve.</p>` + LEGAL_TAIL;
+
+const TERMS_PAGE = LEGAL_HEAD("Terms of Service", "Terms for using the SahiMilo Kisan website and farmer enquiry services.") + String.raw`
+<p>Welcome to SahiMilo Kisan. By accessing this website or contacting us through it, you agree to these Terms of Service. If you do not agree, please do not use the website.</p>
+<h2>1. What SahiMilo Kisan does</h2>
+<p>SahiMilo Kisan is an independent, farmer-focused information and service-connection initiative starting in Sitamarhi, Bihar. We aim to help farmers discover information and request connections relating to agricultural machinery, irrigation, inputs, crop protection, government schemes, transport and market linkages. Service availability depends on location, season, provider capacity and confirmation.</p>
+<h2>2. No government affiliation or guaranteed benefit</h2>
+<p>SahiMilo Kisan is not a government department, subsidy authority, bank, insurer or official representative of any government scheme. We do not approve applications or determine eligibility. Scheme information is general guidance. Always verify current eligibility, deadlines, documents and application status on the relevant official portal or with the responsible department.</p>
+<h2>3. Enquiries are not confirmed bookings</h2>
+<p>Submitting an enquiry does not create a confirmed booking, purchase, service contract or guarantee that a provider is available. Before work begins, the farmer and provider must independently confirm the scope, suitability, timing, price, payment method and other conditions. Do not pay an advance to anyone claiming to represent SahiMilo Kisan unless the arrangement has been independently verified through our official contact details.</p>
+<h2>4. Free pilot and future charges</h2>
+<p>Farmer enquiries through the current pilot website are free. We do not currently offer paid farmer subscriptions or accept online payments through this website. If paid services or subscriptions are introduced in the future, their features, price, duration, cancellation and refund terms will be disclosed separately before you choose to purchase. No future benefit or savings amount is guaranteed.</p>
+<h2>5. User responsibilities</h2>
+<ul><li>Provide accurate contact and request details.</li><li>Use the website lawfully and do not submit false, misleading, abusive or unlawful content.</li><li>Verify provider identity, credentials, quotations, product quality and safety before entering into a transaction.</li><li>Keep your OTPs, passwords and financial credentials private.</li></ul>
+<h2>6. Third-party providers and external links</h2>
+<p>Farm service providers, suppliers, buyers, transport operators, payment services and government websites may be independent third parties. Unless we expressly state otherwise in writing, they are not our employees or agents. Their services, prices, quality, availability, advice and conduct remain their responsibility. External links are provided for convenience and are subject to the third party's own terms.</p>
+<h2>7. Agricultural information and outcomes</h2>
+<p>Agricultural conditions vary by soil, weather, crop, location and farming practice. Information on this website is general and should not replace advice from qualified agricultural experts or official authorities. We do not promise crop yield, profit, subsidy approval, insurance settlement, market price, machinery availability or any particular outcome.</p>
+<h2>8. Website availability and intellectual property</h2>
+<p>We may change, suspend or remove website content or features to maintain or improve the service. Website text, branding and original materials belong to SahiMilo Kisan or their respective rights holders and may not be copied for commercial use without permission. Third-party logos, names and linked materials remain the property of their owners.</p>
+<h2>9. Limitation of responsibility</h2>
+<p>To the extent permitted by applicable law, SahiMilo Kisan is not responsible for losses arising from independent third-party services, inaccurate information supplied by third parties, unconfirmed bookings, crop or market outcomes, or temporary website interruptions. Nothing in these terms excludes liability that cannot legally be excluded under Indian law.</p>
+<h2>10. Privacy</h2>
+<p>Use of personal information is explained in our <a href="/privacy-policy">Privacy Policy</a>.</p>
+<h2>11. Changes and governing law</h2>
+<p>We may update these terms as our services evolve. The updated version will be published here. These terms are governed by the laws of India, and courts having jurisdiction in Bihar, India will have jurisdiction, subject to applicable law.</p>
+<h2>12. Contact</h2>
+<p>Questions about these terms: <a href="mailto:sahimilo.in@gmail.com">sahimilo.in@gmail.com</a> or <a href="tel:+919718073873">+91 97180 73873</a>.</p>
+<p class="note">These terms are an initial plain-language draft for the current enquiry-based pilot. Have an Indian lawyer review them before introducing subscriptions, payments, provider contracts or collecting farmer account data.</p>
+` + LEGAL_TAIL;
