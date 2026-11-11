@@ -83,7 +83,7 @@ async function adminApi(request, env, url) {
   }catch(e){return out({error:e.message||"Server error"},500)}
 }
 const ADMIN_PAGE = String.raw`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>SahiMilo Founder Admin</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>body{font:15px system-ui;background:#f4f7f1;color:#183526;margin:0;padding:20px}.wrap{max-width:1100px;margin:auto}.card{background:white;padding:20px;border:1px solid #dfe8dc;border-radius:14px;margin:16px 0;overflow:auto}input,select,textarea{padding:9px;border:1px solid #ccd9c9;border-radius:7px;margin:5px}button{background:#164b32;color:white;border:0;padding:10px 14px;border-radius:7px;cursor:pointer}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;padding:9px;border-bottom:1px solid #e6ece3}small{color:#68776b}.hide{display:none}</style></head><body><div class="wrap"><h1>🌾 SahiMilo Kisan | Founder Admin</h1><section class="card" id="login"><h2>Admin Login</h2><p><input id="email" type="email" value="sahimilo.in@gmail.com" placeholder="Admin email"></p><p><input id="password" type="password" placeholder="Password"></p><button id="signin">Sign in</button><p id="msg"></p><small>Create and confirm this admin user in Supabase Authentication before signing in.</small></section><section id="dash" class="hide"><div class="card"><span id="who"></span> <button id="refresh">Refresh</button> <button id="logout">Sign out</button><h2 id="counts"></h2></div><div class="card"><h2>Farmer Requests</h2><div id="requests"></div></div><div class="card"><h2>Providers</h2><div id="providers"></div></div><div class="card"><h2>Record Farmer Benefit</h2><input id="bn" placeholder="Farmer name"><input id="bv" placeholder="Village"><input id="bt" placeholder="Benefit type"><input id="br" type="number" placeholder="Realised ₹"><input id="bh" type="number" placeholder="Hours saved"><input id="bo" placeholder="Outcome note"><label><input id="bc" type="checkbox"> Farmer confirmed</label><button id="benefit">Save benefit</button><div id="benefits"></div></div></section></div><script>
-const URL="https://izaphwwumtexlfcdfnkv.supabase.co",KEY="sb_publishable_LnautAyKHBnN_Kf7V9HQ7Q_-sH86Qh";let sb=null,session=null,records={};
+const SUPABASE_URL="https://izaphwwumtexlfcdfnkv.supabase.co",KEY="sb_publishable_LnautAyKHBnN_Kf7V9HQ7Q_-sH86Qh";let sb=null,session=null,records={};
 async function getSupabaseClient(){
   if(sb)return sb;
   if(!window.supabase?.createClient){
@@ -96,7 +96,7 @@ async function getSupabaseClient(){
     });
   }
   if(!window.supabase?.createClient)throw new Error("Supabase login library is unavailable. Please refresh the page and try again.");
-  sb=window.supabase.createClient(URL,KEY);
+  sb=window.supabase.createClient(SUPABASE_URL,KEY);
   return sb;
 }
 const el=id=>document.getElementById(id),esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
