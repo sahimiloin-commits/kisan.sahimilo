@@ -1,8 +1,10 @@
 const CONTACT_EMAIL = "sahimilo.in@gmail.com";
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/enquiry" || url.pathname.startsWith("/api/admin/")) return adminApi(request, env, url);
+    if (url.pathname === "/admin" || url.pathname === "/admin/") return new Response(ADMIN_PAGE, {headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"}});
     if (url.searchParams.get("utm_source")?.toLowerCase() === "chatgpt.com") {
       url.searchParams.delete("utm_source");
       return Response.redirect(url.toString(), 301);
@@ -34,6 +36,66 @@ export default {
     });
   }
 };
+
+
+async function adminApi(request, env, url) {
+  const out = (v,s=200)=>new Response(JSON.stringify(v),{status:s,headers:{"content-type":"application/json","cache-control":"no-store"}});
+  if(!env.SUPABASE_URL||!env.SUPABASE_ANON_KEY||!env.SUPABASE_SERVICE_ROLE_KEY||!env.ADMIN_EMAIL)return out({error:"Cloudflare secrets are not configured."},503);
+  const base=env.SUPABASE_URL.replace(/\/$/,""), token=(request.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
+  const adminHeaders={apikey:env.SUPABASE_SERVICE_ROLE_KEY,authorization:"Bearer "+env.SUPABASE_SERVICE_ROLE_KEY,"content-type":"application/json"};
+  async function db(path,opt={}){const r=await fetch(base+"/rest/v1/"+path,{...opt,headers:{...adminHeaders,...(opt.headers||{})}});const t=await r.text();if(!r.ok)throw new Error("Database error "+r.status);return t?JSON.parse(t):[]}
+  try{
+    if(request.method==="POST"&&url.pathname==="/api/enquiry"){
+      const d=await request.json();if(!d.name||!d.phone||!d.village||!d.need||d.consent!==true)return out({error:"Required details and consent are missing."},400);
+      if(!/^[0-9+() -]{10,18}$/.test(d.phone))return out({error:"Invalid phone number."},400);
+      const id=crypto.randomUUID(),provider=/provider|supplier/i.test(d.role||"");
+      const row=provider?{id,name:d.name,phone:d.phone,village:d.village,block:d.block||null,service:d.need,service_area:d.village,equipment:d.message||null,status:"pending"}:{id,name:d.name,phone:d.phone,village:d.village,block:d.block||null,category:d.need,crop:d.crop||null,acreage:d.acreage||null,needed_on:d.needed_on||null,details:d.message||null,consent:true,status:"naya"};
+      await db(provider?"kisan_providers":"kisan_requests",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify(row)});return out({ok:true,id});
+    }
+    if(!url.pathname.startsWith("/api/admin/"))return out({error:"Not found"},404);
+    if(!token)return out({error:"Unauthorized"},401);
+    const auth=await fetch(base+"/auth/v1/user",{headers:{apikey:env.SUPABASE_ANON_KEY,authorization:"Bearer "+token}});
+    if(!auth.ok)return out({error:"Unauthorized"},401);
+    const user=await auth.json();if((user.email||"").toLowerCase()!==env.ADMIN_EMAIL.toLowerCase()||!user.email_confirmed_at)return out({error:"Not authorised"},403);
+    if(request.method==="GET"&&url.pathname==="/api/admin/overview"){
+      const [requests,providers,benefits]=await Promise.all([
+        db("kisan_requests?select=*&order=created_at.desc&limit=500"),
+        db("kisan_providers?select=*&order=created_at.desc&limit=500"),
+        db("kisan_farmer_benefits?select=*&order=created_at.desc&limit=500")
+      ]);return out({requests,providers,benefits});
+    }
+    if(request.method==="PATCH"&&url.pathname.startsWith("/api/admin/requests/")){
+      const id=encodeURIComponent(url.pathname.split("/").pop()),d=await request.json(),allowed=["status","assigned_provider_id","quoted_amount","admin_notes","completed_at"],p={updated_at:new Date().toISOString()};
+      for(const k of allowed)if(Object.prototype.hasOwnProperty.call(d,k))p[k]=d[k];
+      if(p.status==="poora"&&!p.completed_at)p.completed_at=new Date().toISOString();
+      const r=await db("kisan_requests?id=eq."+id,{method:"PATCH",headers:{"Prefer":"return=representation"},body:JSON.stringify(p)});return out({ok:true,record:r[0]||null});
+    }
+    if(request.method==="PATCH"&&url.pathname.startsWith("/api/admin/providers/")){
+      const id=encodeURIComponent(url.pathname.split("/").pop()),d=await request.json(),allowed=["status","availability","admin_notes","service_area","equipment"],p={updated_at:new Date().toISOString()};
+      for(const k of allowed)if(Object.prototype.hasOwnProperty.call(d,k))p[k]=d[k];if(p.status==="verified")p.verified_at=new Date().toISOString();
+      const r=await db("kisan_providers?id=eq."+id,{method:"PATCH",headers:{"Prefer":"return=representation"},body:JSON.stringify(p)});return out({ok:true,record:r[0]||null});
+    }
+    if(request.method==="POST"&&url.pathname==="/api/admin/benefits"){
+      const d=await request.json();if(!d.farmer_name||!d.village||!d.benefit_type)return out({error:"Farmer, village and benefit type required."},400);
+      const r=await db("kisan_farmer_benefits",{method:"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify({...d,recorded_by_email:env.ADMIN_EMAIL})});return out({ok:true,record:r[0]});
+    }
+    return out({error:"Not found"},404);
+  }catch(e){return out({error:e.message||"Server error"},500)}
+}
+const ADMIN_PAGE = String.raw\`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>SahiMilo Founder Admin</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>body{font:15px system-ui;background:#f4f7f1;color:#183526;margin:0;padding:20px}.wrap{max-width:1100px;margin:auto}.card{background:white;padding:20px;border:1px solid #dfe8dc;border-radius:14px;margin:16px 0;overflow:auto}input,select,textarea{padding:9px;border:1px solid #ccd9c9;border-radius:7px;margin:5px}button{background:#164b32;color:white;border:0;padding:10px 14px;border-radius:7px;cursor:pointer}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;padding:9px;border-bottom:1px solid #e6ece3}small{color:#68776b}.hide{display:none}</style></head><body><div class="wrap"><h1>🌾 SahiMilo Kisan | Founder Admin</h1><section class="card" id="login"><h2>Admin Login</h2><p><input id="email" type="email" value="sahimilo.in@gmail.com" placeholder="Admin email"></p><p><input id="password" type="password" placeholder="Password"></p><button id="signin">Sign in</button><p id="msg"></p><small>Create and confirm this admin user in Supabase Authentication before signing in.</small></section><section id="dash" class="hide"><div class="card"><span id="who"></span> <button id="refresh">Refresh</button> <button id="logout">Sign out</button><h2 id="counts"></h2></div><div class="card"><h2>Farmer Requests</h2><div id="requests"></div></div><div class="card"><h2>Providers</h2><div id="providers"></div></div><div class="card"><h2>Record Farmer Benefit</h2><input id="bn" placeholder="Farmer name"><input id="bv" placeholder="Village"><input id="bt" placeholder="Benefit type"><input id="br" type="number" placeholder="Realised ₹"><input id="bh" type="number" placeholder="Hours saved"><input id="bo" placeholder="Outcome note"><label><input id="bc" type="checkbox"> Farmer confirmed</label><button id="benefit">Save benefit</button><div id="benefits"></div></div></section></div><script>
+const URL="https://izaphwwumtexlfcdfnkv.supabase.co",KEY="sb_publishable_LnautAyKHBnN_Kf7V9HQ7Q_-sH86Qh",sb=window.supabase.createClient(URL,KEY);let session=null,records={};
+const el=id=>document.getElementById(id),esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function api(path,method="GET",body){const r=await fetch(path,{method,headers:{authorization:"Bearer "+session.access_token,"content-type":"application/json"},body:body?JSON.stringify(body):undefined});const j=await r.json();if(!r.ok)throw Error(j.error||"Request failed");return j}
+async function load(){records=await api("/api/admin/overview");el("counts").textContent=records.requests.length+" requests · "+records.providers.length+" providers · "+records.providers.filter(x=>x.status==="verified").length+" verified";
+el("requests").innerHTML="<table><tr><th>Farmer</th><th>Requirement</th><th>Status</th><th>Provider</th><th>Quote ₹</th><th>Notes</th><th>Save</th></tr>"+records.requests.map(x=>"<tr><td>"+esc(x.name)+"<br>"+esc(x.phone)+"<br>"+esc(x.village)+"</td><td>"+esc(x.category)+"<br>"+esc(x.details)+"</td><td><select id='s"+esc(x.id)+"'>"+["naya","sampark-kiya","provider-dhundh-rahe","provider-mila","rate-confirmed","poora","unresolved","cancelled","junk"].map(s=>"<option "+(s===x.status?"selected":"")+">"+s+"</option>").join("")+"</select></td><td><select id='p"+esc(x.id)+"'><option value=''>Unassigned</option>"+records.providers.map(p=>"<option value='"+esc(p.id)+"' "+(p.id===x.assigned_provider_id?"selected":"")+">"+esc(p.name)+"</option>").join("")+"</select></td><td><input id='q"+esc(x.id)+"' type='number' value='"+esc(x.quoted_amount||"")+"' style='width:80px'></td><td><input id='n"+esc(x.id)+"' value='"+esc(x.admin_notes||"")+"' style='width:120px'></td><td><button onclick='saveReq("+JSON.stringify(x.id)+")'>Save</button></td></tr>").join("")+"</table>";
+el("providers").innerHTML="<table><tr><th>Name / phone</th><th>Service / village</th><th>Status</th><th>Availability</th><th>Notes</th><th>Save</th></tr>"+records.providers.map(x=>"<tr><td>"+esc(x.name)+"<br>"+esc(x.phone)+"</td><td>"+esc(x.service)+"<br>"+esc(x.village)+"</td><td><select id='ps"+esc(x.id)+"'>"+["pending","contacted","verified","unavailable","junk"].map(s=>"<option "+(s===x.status?"selected":"")+">"+s+"</option>").join("")+"</select></td><td><select id='pa"+esc(x.id)+"'>"+["not-set","today","tomorrow","busy","unavailable"].map(s=>"<option "+(s===(x.availability||"not-set")?"selected":"")+">"+s+"</option>").join("")+"</select></td><td><input id='pn"+esc(x.id)+"' value='"+esc(x.admin_notes||"")+"' style='width:120px'></td><td><button onclick='saveProv("+JSON.stringify(x.id)+")'>Save</button></td></tr>").join("")+"</table>";
+el("benefits").innerHTML="<p><b>Benefit records:</b> "+records.benefits.length+"</p>"+records.benefits.map(b=>esc(b.farmer_name)+" · "+esc(b.village)+" · ₹"+esc(b.realised_amount||0)+" · "+(b.farmer_confirmed?"Confirmed":"Not confirmed")).join("<br>")}
+window.saveReq=async id=>{try{await api("/api/admin/requests/"+encodeURIComponent(id),"PATCH",{status:el("s"+id).value,assigned_provider_id:el("p"+id).value||null,quoted_amount:el("q"+id).value||null,admin_notes:el("n"+id).value});await load()}catch(e){alert(e.message)}};
+window.saveProv=async id=>{try{await api("/api/admin/providers/"+encodeURIComponent(id),"PATCH",{status:el("ps"+id).value,availability:el("pa"+id).value,admin_notes:el("pn"+id).value});await load()}catch(e){alert(e.message)}};
+el("signin").onclick=async()=>{try{el("msg").textContent="Signing in...";const {data,error}=await sb.auth.signInWithPassword({email:el("email").value,password:el("password").value});if(error)throw error;if((data.user.email||"").toLowerCase()!=="sahimilo.in@gmail.com")throw Error("Not the authorised admin email.");session=data.session;el("login").classList.add("hide");el("dash").classList.remove("hide");el("who").textContent=data.user.email;await load()}catch(e){el("msg").textContent=e.message}};
+el("refresh").onclick=()=>load().catch(e=>alert(e.message));el("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
+el("benefit").onclick=async()=>{try{await api("/api/admin/benefits","POST",{farmer_name:el("bn").value,village:el("bv").value,benefit_type:el("bt").value,realised_amount:el("br").value||null,time_saved_hours:el("bh").value||null,outcome_note:el("bo").value,farmer_confirmed:el("bc").checked});await load();alert("Saved")}catch(e){alert(e.message)}};
+</script></body></html>\`;
 
 const PAGE = String.raw`<!doctype html>
 <html lang="hi-Latn">
