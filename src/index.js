@@ -5,6 +5,17 @@ const CONTACT_EMAIL = "sahimilo.in@gmail.com";
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // Remove ChatGPT attribution parameters from every public route, not just page views.
+    let removedChatGPTTracking = false;
+    for (const [key, value] of [...url.searchParams.entries()]) {
+      if (/chatgpt\.com/i.test(key) || /chatgpt\.com/i.test(value)) {
+        url.searchParams.delete(key);
+        removedChatGPTTracking = true;
+      }
+    }
+    if (removedChatGPTTracking) {
+      return Response.redirect(url.toString(), 301);
+    }
     if (url.pathname === "/sahimilo-kisan-logo.webp") {
       const binary = atob(LOGO_BASE64);
       const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
@@ -12,10 +23,6 @@ export default {
     }
     if (url.pathname === "/api/enquiry" || url.pathname.startsWith("/api/admin/")) return adminApi(request, env, url);
     if (url.pathname === "/admin" || url.pathname === "/admin/") return new Response(ADMIN_PAGE, {status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store, no-cache, must-revalidate","pragma":"no-cache","x-content-type-options":"nosniff","x-sahimilo-route":"founder-admin"}});
-    if (url.searchParams.get("utm_source")?.toLowerCase() === "chatgpt.com") {
-      url.searchParams.delete("utm_source");
-      return Response.redirect(url.toString(), 301);
-    }
     if (url.pathname === "/privacy-policy" || url.pathname === "/privacy-policy/") return new Response(PRIVACY_PAGE, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (url.pathname === "/terms" || url.pathname === "/terms/") return new Response(TERMS_PAGE, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
     if (url.pathname === "/health") {
