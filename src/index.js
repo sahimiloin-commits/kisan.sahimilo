@@ -179,20 +179,25 @@ const PAGE = String.raw`<!doctype html>
 <div class="field full"><label for="role">Aap kaun hain? *</label><select id="role" name="role" required><option value="">Chunein</option><option>Kisan</option><option>Farm service provider</option><option>Beej / khaad supplier</option><option>Buyer / trader</option><option>Other</option></select></div>
 <div class="field full"><label for="need">Kis kaam mein madad chahiye? *</label><select id="need" name="need" required><option value="">Chunein</option><option>Sinchai / pump</option><option>Tractor / machinery / operator</option><option>Sarkari yojana / fasal bima</option><option>Fasal suraksha / salah</option><option>Beej / khaad / krishi input</option><option>Fasal bechna / buyer</option><option>Transport / delivery</option><option>Service provider registration</option><option>Other</option></select></div>
 <div class="field full"><label for="message">Thoda aur batayein</label><textarea id="message" name="message" placeholder="Fasal, area, date ya apni zaroorat likhein (optional)"></textarea></div>
-<div class="field full"><button class="btn" type="submit">Request bhejein →</button></div></div>
-<p class="formNote">Submit karne par aapke device ka email app khulega. Abhi website par enquiry database connect nahi hai, isliye email bhejna zaroori hai.</p></form></div></div></section>
+<div class="field full"><label><input type="checkbox" name="consent" required> Main apni request par jawab paane ke liye SahiMilo Kisan ko apni details use karne ki sahmati deta/deti hoon. *</label></div><div class="field full"><button class="btn" type="submit">Request bhejein →</button></div></div>
+<p class="formNote">Aapki request surakshit roop se submit hogi. Details ka istemal sirf aapki enquiry par sampark karne ke liye hoga.</p></form></div></div></section>
 </main>
 <footer class="footer"><div class="wrap"><div class="foot"><div><a class="brand" href="#"><img src="https://raw.githubusercontent.com/sahimiloin-commits/kisan.sahimilo/main/SahiMilo%20Kisan%20Agricultural%20Badge.png" alt="SahiMilo Kisan Agricultural Badge" width="46" height="46"><span>SahiMilo Kisan<small>Kheti Ki Har Zaroorat, Ek Hi Jagah.</small></span></a><p>Khet se bazaar tak, kheti ki zarooraton ko samajhne aur sahi madad tak pahunch banane ki ek pehal.</p></div><div><b>Quick links</b><p><a href="#services">Services</a><br><a href="#schemes">Sarkari yojana</a><br><a href="#membership">Membership</a><br><a href="#contact">Contact</a></p></div></div><div class="footBottom"><span>© <span id="year"></span> SahiMilo Kisan. All rights reserved.</span><span><a href="/privacy-policy">Privacy Policy</a> · <a href="/terms">Terms of Service</a></span><span>Sitamarhi, Bihar, India</span></div></div></footer>
 <a class="btn mobileBar" href="#contact">🌾 Kisan request bhejein</a>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 document.querySelectorAll("[data-need]").forEach(function(link){link.addEventListener("click",function(){document.getElementById("need").value=link.dataset.need;});});
-document.getElementById("enquiry").addEventListener("submit",function(e){
+document.getElementById("enquiry").addEventListener("submit",async function(e){
  e.preventDefault();
- const d=new FormData(this);
- const subject=encodeURIComponent("SahiMilo Kisan enquiry - "+d.get("name"));
- const body=encodeURIComponent("Name: "+d.get("name")+"\nMobile: "+d.get("phone")+"\nVillage/City: "+d.get("village")+"\nDistrict: "+d.get("district")+"\nRole: "+d.get("role")+"\nRequirement: "+d.get("need")+"\nMessage: "+d.get("message"));
- window.location.href="mailto:sahimilo.in@gmail.com?subject="+subject+"&body="+body;
+ const d=new FormData(this),button=this.querySelector('button[type="submit"]');
+ const payload={name:d.get("name"),phone:d.get("phone"),village:d.get("village"),block:d.get("district"),role:d.get("role"),need:d.get("need"),message:d.get("message"),consent:d.get("consent")==="on"};
+ button.disabled=true;button.textContent="Request bheji ja rahi hai...";
+ try{
+  const response=await fetch("/api/enquiry",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});
+  const result=await response.json();if(!response.ok)throw new Error(result.error||"Request submit nahi ho payi.");
+  this.reset();alert("Dhanyavaad! Aapki request mil gayi hai. Reference ID: "+result.id);
+ }catch(error){alert(error.message+" Aap call ya WhatsApp bhi kar sakte hain.");}
+ finally{button.disabled=false;button.textContent="Request bhejein →";}
 });
 </script>
 </body></html>`;
