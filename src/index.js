@@ -148,7 +148,7 @@ const PAGE = String.raw`<!doctype html>
 <div class="top"><div class="wrap"><span>🌱 Bihar se shuruaat, kisano ke saath</span><span>Seedhi baat • Bharosemand madad • Kisan pehle</span></div></div>
 <header class="header"><div class="wrap nav">
 <a class="brand" href="#" aria-label="SahiMilo Kisan home">
-<img src="/sahimilo-kisan-logo.jpeg" alt="SahiMilo Kisan logo" width="46" height="46">
+<img src="/sahimilo-kisan-logo.webp" alt="SahiMilo Kisan logo" width="46" height="46">
 <span>SahiMilo Kisan<small>KHETI KI HAR ZAROORAT, EK HI JAGAH.</small></span></a>
 <nav class="links"><a href="#services">Services</a><a href="#about">Hamare baare mein</a><a href="#how">Kaise kaam karein</a><a href="#schemes">Yojana</a><a href="#contact">Sampark</a></nav>
 <a class="btn" href="#contact">Madad maangein</a>
@@ -204,7 +204,7 @@ const PAGE = String.raw`<!doctype html>
 <div class="field full"><label><input type="checkbox" name="consent" required> Main apni request par jawab paane ke liye SahiMilo Kisan ko apni details use karne ki sahmati deta/deti hoon. *</label></div><div class="field full"><button class="btn" type="submit">Request bhejein →</button></div></div>
 <p class="formNote">Aapki request surakshit roop se submit hogi. Details ka istemal sirf aapki enquiry par sampark karne ke liye hoga.</p></form></div></div></section>
 </main>
-<footer class="footer"><div class="wrap"><div class="foot"><div><a class="brand" href="#"><img src="/sahimilo-kisan-logo.jpeg" alt="SahiMilo Kisan Agricultural Badge" width="46" height="46"><span>SahiMilo Kisan<small>Kheti Ki Har Zaroorat, Ek Hi Jagah.</small></span></a><p>Khet se bazaar tak, kheti ki zarooraton ko samajhne aur sahi madad tak pahunch banane ki ek pehal.</p></div><div><b>Quick links</b><p><a href="#services">Services</a><br><a href="#schemes">Sarkari yojana</a><br><a href="#membership">Membership</a><br><a href="#contact">Contact</a></p></div></div><div class="footBottom"><span>© <span id="year"></span> SahiMilo Kisan. All rights reserved.</span><span><a href="/privacy-policy">Privacy Policy</a> · <a href="/terms">Terms of Service</a></span><span>Sitamarhi, Bihar, India</span></div></div></footer>
+<footer class="footer"><div class="wrap"><div class="foot"><div><a class="brand" href="#"><img src="/sahimilo-kisan-logo.webp" alt="SahiMilo Kisan Agricultural Badge" width="46" height="46"><span>SahiMilo Kisan<small>Kheti Ki Har Zaroorat, Ek Hi Jagah.</small></span></a><p>Khet se bazaar tak, kheti ki zarooraton ko samajhne aur sahi madad tak pahunch banane ki ek pehal.</p></div><div><b>Quick links</b><p><a href="#services">Services</a><br><a href="#schemes">Sarkari yojana</a><br><a href="#membership">Membership</a><br><a href="#contact">Contact</a></p></div></div><div class="footBottom"><span>© <span id="year"></span> SahiMilo Kisan. All rights reserved.</span><span><a href="/privacy-policy">Privacy Policy</a> · <a href="/terms">Terms of Service</a></span><span>Sitamarhi, Bihar, India</span></div></div></footer>
 <a class="btn mobileBar" href="#contact">🌾 Kisan request bhejein</a>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
