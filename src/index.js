@@ -8,7 +8,7 @@ export default {
     if (url.pathname === "/sahimilo-kisan-logo.webp") {
       const binary = atob(LOGO_BASE64);
       const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
-      return new Response(bytes, { headers: { "content-type": "image/jpeg", "cache-control": "public, max-age=31536000, immutable", "x-content-type-options": "nosniff" } });
+      return new Response(bytes, { headers: { "content-type": "image/webp", "cache-control": "public, max-age=31536000, immutable", "x-content-type-options": "nosniff" } });
     }
     if (url.pathname === "/api/enquiry" || url.pathname.startsWith("/api/admin/")) return adminApi(request, env, url);
     if (url.pathname === "/admin" || url.pathname === "/admin/") return new Response(ADMIN_PAGE, {status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store, no-cache, must-revalidate","pragma":"no-cache","x-content-type-options":"nosniff","x-sahimilo-route":"founder-admin"}});
