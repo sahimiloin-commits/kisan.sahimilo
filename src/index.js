@@ -4,7 +4,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/enquiry" || url.pathname.startsWith("/api/admin/")) return adminApi(request, env, url);
-    if (url.pathname.replace(/\\/+$/, "") === "/admin") return new Response(ADMIN_PAGE, {status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store, no-cache, must-revalidate","pragma":"no-cache","x-content-type-options":"nosniff","x-sahimilo-route":"founder-admin"}});
+    if (url.pathname.replace(/\/+$/, "") === "/admin") return new Response(ADMIN_PAGE, {status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store, no-cache, must-revalidate","pragma":"no-cache","x-content-type-options":"nosniff","x-sahimilo-route":"founder-admin"}});
     if (url.searchParams.get("utm_source")?.toLowerCase() === "chatgpt.com") {
       url.searchParams.delete("utm_source");
       return Response.redirect(url.toString(), 301);
