@@ -54,7 +54,12 @@ export default {
 
 async function adminApi(request, env, url) {
   const out = (v,s=200)=>new Response(JSON.stringify(v),{status:s,headers:{"content-type":"application/json","cache-control":"no-store"}});
-  if(!env.SUPABASE_URL||!env.SUPABASE_ANON_KEY||!env.SUPABASE_SERVICE_ROLE_KEY||!env.ADMIN_EMAIL)return out({error:"Cloudflare secrets are not configured."},503);
+  const isEnquiry = url.pathname === "/api/enquiry";
+  const requiredSettings = isEnquiry
+    ? ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]
+    : ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "ADMIN_EMAIL"];
+  const missingSettings = requiredSettings.filter(name => !env[name] || !String(env[name]).trim());
+  if (missingSettings.length) return out({error:"Cloudflare configuration is missing: " + missingSettings.join(", ")},503);
   const base=env.SUPABASE_URL.replace(/\/$/,""), token=(request.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");
   const adminHeaders={apikey:env.SUPABASE_SERVICE_ROLE_KEY,authorization:"Bearer "+env.SUPABASE_SERVICE_ROLE_KEY,"content-type":"application/json"};
   async function db(path,opt={}){const r=await fetch(base+"/rest/v1/"+path,{...opt,headers:{...adminHeaders,...(opt.headers||{})}});const t=await r.text();if(!r.ok)throw new Error("Database error "+r.status);return t?JSON.parse(t):[]}
