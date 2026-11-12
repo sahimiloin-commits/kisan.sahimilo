@@ -157,7 +157,7 @@ const PAGE = String.raw`<!doctype html>
 <a class="brand" href="#" aria-label="SahiMilo Kisan home">
 <img src="/sahimilo-kisan-logo.webp" alt="SahiMilo Kisan logo" width="46" height="46">
 <span>SahiMilo Kisan<small>KHETI KI HAR ZAROORAT, EK HI JAGAH.</small></span></a>
-<nav class="links"><a href="#services">Services</a><a href="#benefits">Kisan ko fayde</a><a href="#about">Hamare baare mein</a><a href="#how">Kaise kaam karein</a><a href="#schemes">Yojana & finance</a><a href="#contact">Sampark</a></nav>
+<nav class="links"><a href="#services">Services</a><a href="#benefits">Kisan ko fayde</a><a href="#about">Hamare baare mein</a><a href="#how">Kaise kaam karein</a><a href="#schemes">Yojana & finance</a><a href="#contact">Provider banein →</a></nav>
 <a class="btn" href="#contact">Madad maangein</a>
 </div></header>
 <main>
